@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.40.2.10011",
-      "templateHash": "17764596325444914266"
+      "templateHash": "17078404177113341747"
     }
   },
   "parameters": {
@@ -305,6 +305,9 @@
           },
           "pbiEmbedUrl": {
             "value": "[parameters('pbiEmbedUrl')]"
+          },
+          "allowedOrigins": {
+            "value": "[format('https://{0}', reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'static-web-app'), '2025-04-01').outputs.defaultHostname.value)]"
           }
         },
         "template": {
@@ -314,7 +317,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.40.2.10011",
-              "templateHash": "1418541618362099526"
+              "templateHash": "8212852983672607496"
             }
           },
           "parameters": {
@@ -385,6 +388,13 @@
               "defaultValue": "",
               "metadata": {
                 "description": "Power BI Embed URL (optional)."
+              }
+            },
+            "allowedOrigins": {
+              "type": "string",
+              "defaultValue": "",
+              "metadata": {
+                "description": "Allowed CORS origins (comma-separated)."
               }
             }
           },
@@ -467,6 +477,10 @@
                         {
                           "name": "PBI_EMBED_URL",
                           "value": "[parameters('pbiEmbedUrl')]"
+                        },
+                        {
+                          "name": "ALLOWED_ORIGINS",
+                          "value": "[parameters('allowedOrigins')]"
                         }
                       ]
                     }
@@ -503,7 +517,8 @@
       "dependsOn": [
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'container-registry')]",
         "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'monitoring')]",
-        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]"
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]",
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'static-web-app')]"
       ]
     },
     {
@@ -534,7 +549,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.40.2.10011",
-              "templateHash": "16790057539345499857"
+              "templateHash": "2120691742431764267"
             }
           },
           "parameters": {
@@ -576,6 +591,10 @@
             "url": {
               "type": "string",
               "value": "[format('https://{0}', reference(resourceId('Microsoft.Web/staticSites', parameters('name')), '2022-09-01').defaultHostname)]"
+            },
+            "defaultHostname": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Web/staticSites', parameters('name')), '2022-09-01').defaultHostname]"
             },
             "name": {
               "type": "string",

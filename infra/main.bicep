@@ -61,6 +61,7 @@ module containerApps './modules/container-apps.bicep' = {
     appInsightsConnectionString: monitoring.outputs.appInsightsConnectionString
     pbiReportId: pbiReportId
     pbiEmbedUrl: pbiEmbedUrl
+    allowedOrigins: 'https://${staticWebApp.outputs.defaultHostname}'
   }
 }
 

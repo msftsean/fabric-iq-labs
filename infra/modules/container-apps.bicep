@@ -32,6 +32,9 @@ param pbiReportId string = ''
 @description('Power BI Embed URL (optional).')
 param pbiEmbedUrl string = ''
 
+@description('Allowed CORS origins (comma-separated).')
+param allowedOrigins string = ''
+
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' existing = {
   name: containerRegistryName
 }
@@ -95,6 +98,7 @@ resource apiContainerApp 'Microsoft.App/containerApps@2023-05-01' = {
             { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: appInsightsConnectionString }
             { name: 'PBI_REPORT_ID', value: pbiReportId }
             { name: 'PBI_EMBED_URL', value: pbiEmbedUrl }
+            { name: 'ALLOWED_ORIGINS', value: allowedOrigins }
           ]
         }
       ]
