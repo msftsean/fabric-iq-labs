@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ThinkTransit Workforce Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div>
+      <h1>🚌 ThinkTransit Workforce Dashboard</h1>
+      <div class="subtitle">Fabric IQ Labs — Real-time KPIs + Power BI</div>
+    </div>
+  </header>
+
+  <main>
+    <!-- KPI Cards -->
+    <div class="kpi-grid" id="kpi-grid">
+      <div class="kpi-card"><div class="loading"><div class="spinner"></div> Loading…</div></div>
+    </div>
+
+    <!-- Trend Table -->
+    <section>
+      <h2>📊 Workforce Trends</h2>
+      <div style="display:flex; gap:1rem; align-items:center; margin-bottom:1rem;">
+        <label for="groupBy" style="font-size:.85rem; font-weight:600;">Group by:</label>
+        <select id="groupBy" style="padding:.4rem .8rem; border-radius:4px; border:1px solid var(--border);">
+          <option value="Garage" selected>Garage</option>
+          <option value="EmployeeId">Employee</option>
+          <option value="all">All (date only)</option>
+        </select>
+        <button id="refresh" style="padding:.4rem 1rem; border-radius:4px; border:1px solid var(--primary); background:var(--primary); color:#fff; cursor:pointer; font-size:.85rem;">Refresh</button>
+      </div>
+      <table id="trendTable">
+        <tbody>
+          <tr><td class="loading"><div class="spinner"></div> Loading…</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Power BI Embed -->
+    <section>
+      <h2>📈 Power BI Report</h2>
+      <div id="pbiStatus"></div>
+      <div class="embed-container pbi" id="pbiContainer"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

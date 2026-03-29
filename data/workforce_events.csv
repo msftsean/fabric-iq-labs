@@ -1,0 +1,8 @@
+EmployeeId,Date,Garage,ScheduledShiftHours,ActualWorkedHours,AbsenceFlag,OvertimeHours,TripCancelledFlag
+E101,2026-03-01,North,8,8,false,0,false
+E102,2026-03-01,North,8,10,false,2,false
+E103,2026-03-01,South,8,0,true,0,true
+E104,2026-03-02,South,8,9,false,1,false
+E105,2026-03-02,North,8,12,false,4,true
+E106,2026-03-03,North,8,8,false,0,false
+E107,2026-03-03,South,8,11,false,3,false
