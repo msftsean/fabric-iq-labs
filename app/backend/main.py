@@ -9,15 +9,26 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="ThinkTransit Workforce Signals API", version="1.0")
 
+_origins = ["http://localhost:5500", "http://127.0.0.1:5500"]
+if os.getenv("ALLOWED_ORIGINS"):
+    _origins += [o.strip() for o in os.getenv("ALLOWED_ORIGINS").split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5500", "http://127.0.0.1:5500"],
+    allow_origins=_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-CSV_PATH = Path(__file__).resolve().parents[2] / "data" / "workforce_events.csv"
+_data_env = os.getenv("DATA_DIR", "")
+if _data_env:
+    DATA_DIR = Path(_data_env)
+elif (Path(__file__).resolve().parent / "data").is_dir():
+    DATA_DIR = Path(__file__).resolve().parent / "data"
+else:
+    DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+CSV_PATH = DATA_DIR / "workforce_events.csv"
 
 
 def load_df() -> pd.DataFrame:

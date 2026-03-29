@@ -5,3 +5,16 @@
 .squad/sessions/
 # Squad: SubSquad activation file (local to this machine)
 .squad-workstream
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# Azure
+.azure/*/
+!.azure/plan.md
+
+# Data copied by azd prepackage hook
+app/backend/data/

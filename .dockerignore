@@ -1,0 +1,13 @@
+.git
+.venv
+app/backend/.venv
+__pycache__
+*.pyc
+*.pyo
+.env
+.azure
+.specify
+.github
+specs
+prompts
+node_modules
