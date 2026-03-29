@@ -4,7 +4,7 @@
 
 const API = location.hostname === "localhost" || location.hostname === "127.0.0.1"
   ? "http://localhost:8000"
-  : "https://ca-api-6iq3am.bravefield-8dee0ad6.eastus2.azurecontainerapps.io";
+  : "https://ca-api-5jran7.lemonglacier-1d7bbe4a.eastus2.azurecontainerapps.io";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
