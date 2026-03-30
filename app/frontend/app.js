@@ -102,14 +102,23 @@ async function loadPowerBI() {
   try {
     const meta = await fetchJSON("/pbi/config");
 
-    status.innerHTML = `<div class="status-banner info" style="display:flex; align-items:center; gap:1rem;">
-      <span>Power BI report ready (ID: ${meta.reportId.substring(0, 8)}…).</span>
-      <button id="pbiSignIn" style="padding:.4rem 1rem; border-radius:4px; border:1px solid var(--primary); background:var(--primary); color:#fff; cursor:pointer; font-size:.85rem;">
-        Sign In &amp; Embed
-      </button>
-    </div>`;
-
-    $("pbiSignIn").addEventListener("click", () => embedReport(meta, container, status));
+    if (meta.reportId) {
+      status.innerHTML = `<div class="status-banner info" style="display:flex; align-items:center; gap:1rem;">
+        <span>Power BI report ready (ID: ${escapeHtml(meta.reportId.substring(0, 8))}…).</span>
+        <button id="pbiSignIn" style="padding:.4rem 1rem; border-radius:4px; border:1px solid var(--primary); background:var(--primary); color:#fff; cursor:pointer; font-size:.85rem;">
+          Sign In &amp; Embed
+        </button>
+      </div>`;
+      $("pbiSignIn").addEventListener("click", () => embedReport(meta, container, status));
+    } else if (meta.datasetId) {
+      status.innerHTML = `<div class="status-banner info" style="display:flex; align-items:center; gap:1rem;">
+        <span>Dataset found. Click to create a report with visuals.</span>
+        <button id="pbiCreate" style="padding:.4rem 1rem; border-radius:4px; border:1px solid var(--primary); background:var(--primary); color:#fff; cursor:pointer; font-size:.85rem;">
+          Sign In &amp; Create Report
+        </button>
+      </div>`;
+      $("pbiCreate").addEventListener("click", () => createReport(meta, container, status));
+    }
   } catch {
     status.innerHTML = `<div class="status-banner info">
       Power BI embed not configured. Set <code>PBI_REPORT_ID</code> and
@@ -178,6 +187,67 @@ async function embedReport(meta, container, status) {
     });
   } catch (err) {
     status.innerHTML = `<div class="status-banner error">Failed to embed: ${escapeHtml(err.message)}</div>`;
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function createReport(meta, container, status) {
+  const btn = $("pbiCreate");
+  if (btn) btn.disabled = true;
+
+  try {
+    status.innerHTML = `<div class="status-banner info">Signing in to Power BI…</div>`;
+
+    if (!msalInitPromise) {
+      const instance = new msal.PublicClientApplication(msalConfig);
+      msalInitPromise = instance.initialize().then(() => instance);
+    }
+    const msalInstance = await msalInitPromise;
+
+    const loginReq = { scopes: ["https://analysis.windows.net/powerbi/api/Report.Read.All"] };
+    let tokenResponse;
+    try {
+      const accounts = msalInstance.getAllAccounts();
+      if (accounts.length > 0) {
+        tokenResponse = await msalInstance.acquireTokenSilent({ ...loginReq, account: accounts[0] });
+      } else {
+        tokenResponse = await msalInstance.acquireTokenPopup(loginReq);
+      }
+    } catch {
+      tokenResponse = await msalInstance.acquireTokenPopup(loginReq);
+    }
+
+    status.innerHTML = `<div class="status-banner info">Opening report editor — drag fields to create visuals, then click <strong>File → Save</strong>.</div>`;
+
+    const createConfig = {
+      type: "report",
+      tokenType: window["powerbi-client"].models.TokenType.Aad,
+      accessToken: tokenResponse.accessToken,
+      embedUrl: "https://app.powerbi.com/reportEmbed",
+      datasetId: meta.datasetId,
+      settings: {
+        panes: { filters: { visible: true }, pageNavigation: { visible: true } },
+      },
+    };
+
+    const powerbiClient = new window["powerbi-client"].service.Service(
+      window["powerbi-client"].factories.hpmFactory,
+      window["powerbi-client"].factories.wpmpFactory,
+      window["powerbi-client"].factories.routerFactory
+    );
+
+    powerbiClient.reset(container);
+    const report = powerbiClient.createReport(container, createConfig);
+
+    report.on("saved", (event) => {
+      status.innerHTML = `<div class="status-banner info" style="color:var(--success);">✅ Report saved! ID: ${escapeHtml(event.detail.reportObjectId)}</div>`;
+    });
+
+    report.on("error", (event) => {
+      status.innerHTML = `<div class="status-banner error">Editor error: ${escapeHtml(event.detail.message)}</div>`;
+    });
+  } catch (err) {
+    status.innerHTML = `<div class="status-banner error">Failed to open editor: ${escapeHtml(err.message)}</div>`;
     if (btn) btn.disabled = false;
   }
 }

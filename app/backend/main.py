@@ -116,11 +116,19 @@ def pbi_config():
     """Return embed metadata for user-owns-data Power BI embedding."""
     report_id = os.getenv("PBI_REPORT_ID")
     embed_url = os.getenv("PBI_EMBED_URL")
+    dataset_id = os.getenv("PBI_DATASET_ID", "")
+    workspace_id = os.getenv("PBI_WORKSPACE_ID", "")
 
-    if not report_id or not embed_url:
+    if not report_id and not dataset_id:
         raise HTTPException(
             status_code=400,
-            detail="Missing PBI_REPORT_ID or PBI_EMBED_URL env vars",
+            detail="Missing PBI_REPORT_ID or PBI_DATASET_ID env vars",
         )
 
-    return {"type": "report", "reportId": report_id, "embedUrl": embed_url}
+    return {
+        "type": "report",
+        "reportId": report_id or "",
+        "embedUrl": embed_url or "",
+        "datasetId": dataset_id,
+        "workspaceId": workspace_id,
+    }
