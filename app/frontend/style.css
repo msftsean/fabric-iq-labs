@@ -113,6 +113,7 @@ tr:hover td { background: #f0f6ff; }
 
 .embed-container {
   width: 100%;
+  height: 700px;
   min-height: 700px;
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -120,8 +121,8 @@ tr:hover td { background: #f0f6ff; }
 }
 
 .embed-container iframe {
-  width: 100%;
-  height: 700px;
+  width: 100% !important;
+  height: 100% !important;
   border: none;
 }
 
